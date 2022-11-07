@@ -53,7 +53,7 @@ apigClientFactory.newClient = function (config) {
 
     
     // extract endpoint and path from url
-    var invokeUrl = 'https://lstrw46tac.execute-api.us-east-1.amazonaws.com/testing-get';
+    var invokeUrl = 'https://lstrw46tac.execute-api.us-east-1.amazonaws.com/testing-put';
     var endpoint = /(^https?:\/\/[^\/]+)/g.exec(invokeUrl)[1];
     var pathComponent = invokeUrl.substring(endpoint.length);
 
@@ -83,21 +83,39 @@ apigClientFactory.newClient = function (config) {
     
     
     
-    apigClient.photosPut = function (params, body, additionalParams) {
+    apigClient.photosFolderObjectPut = function (params, body, additionalParams) {
         if(additionalParams === undefined) { additionalParams = {}; }
         
-        apiGateway.core.utils.assertParametersDefined(params, [], ['body']);
+        apiGateway.core.utils.assertParametersDefined(params, ['object', 'folder', 'x-amz-meta-customLabels'], ['body']);
         
-        var photosPutRequest = {
+        var photosFolderObjectPutRequest = {
             verb: 'put'.toUpperCase(),
-            path: pathComponent + uritemplate('/photos').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            path: pathComponent + uritemplate('/photos/{folder}/{object}').expand(apiGateway.core.utils.parseParametersToObject(params, ['object', 'folder', ])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, ['x-amz-meta-customLabels']),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
             body: body
         };
         
         
-        return apiGatewayClient.makeRequest(photosPutRequest, authType, additionalParams, config.apiKey);
+        return apiGatewayClient.makeRequest(photosFolderObjectPutRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.photosFolderObjectOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['x-amz-meta-customLabels'], ['body']);
+        
+        var photosFolderObjectOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/photos/{folder}/{object}').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, ['x-amz-meta-customLabels']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(photosFolderObjectOptionsRequest, authType, additionalParams, config.apiKey);
     };
     
     
@@ -134,6 +152,42 @@ apigClientFactory.newClient = function (config) {
         
         
         return apiGatewayClient.makeRequest(searchOptionsRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.folderObjectPut = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['object', 'folder', 'x-amz-meta-customLabels'], ['body']);
+        
+        var folderObjectPutRequest = {
+            verb: 'put'.toUpperCase(),
+            path: pathComponent + uritemplate('/{folder}/{object}').expand(apiGateway.core.utils.parseParametersToObject(params, ['object', 'folder', ])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, ['x-amz-meta-customLabels']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(folderObjectPutRequest, authType, additionalParams, config.apiKey);
+    };
+    
+    
+    apigClient.folderObjectOptions = function (params, body, additionalParams) {
+        if(additionalParams === undefined) { additionalParams = {}; }
+        
+        apiGateway.core.utils.assertParametersDefined(params, ['x-amz-meta-customLabels'], ['body']);
+        
+        var folderObjectOptionsRequest = {
+            verb: 'options'.toUpperCase(),
+            path: pathComponent + uritemplate('/{folder}/{object}').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
+            headers: apiGateway.core.utils.parseParametersToObject(params, ['x-amz-meta-customLabels']),
+            queryParams: apiGateway.core.utils.parseParametersToObject(params, []),
+            body: body
+        };
+        
+        
+        return apiGatewayClient.makeRequest(folderObjectOptionsRequest, authType, additionalParams, config.apiKey);
     };
     
 

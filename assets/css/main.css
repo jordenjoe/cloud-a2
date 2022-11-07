@@ -22,5 +22,6 @@
 }
 
 .photo{
-  margin-right: 10px;
+  margin: 10px;
+  max-width: 100px;
 }

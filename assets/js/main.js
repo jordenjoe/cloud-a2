@@ -1,60 +1,66 @@
-
-
-
-$(document).ready(function() {
+$(document).ready(function () {
 
 });
 
 function callSearchApi(message) {
-  console.log("inside here");
-  // params, body, additionalParams
-  return sdk.searchGet({q: message}, {}, {});
+  return sdk.searchGet({ q: message }, {}, {});
 }
 
+document.getElementById("searchButton").addEventListener("click", function () {
+  var msg = document.getElementById("searchInput").value;
 
-
-document.getElementById("btn").addEventListener("click", function () {
-  var msg = document.getElementById("myInput").value;
-  console.log(msg);
-
-  displayPhotos = document.getElementById("displayPhotos");
+  displaySearchPhotos = document.getElementById("displaySearchPhotos");
 
   callSearchApi(msg)
-  .then((response) => {
-    console.log(response);
-    displayPhotos.innerHTML = response["data"];
-  })
-  .catch((error) => {
-    console.log('an error occurred', error);
-  });
+    .then((response) => {
+      console.log(response);
+      displaySearchPhotos.innerHTML = response["data"];
+    })
+    .catch((error) => {
+      console.log('an error occurred', error);
+    });
 
 })
 
-function record(){
+function callUploadApi(tags) {
+  var file = document.getElementById("imageInput").files[0];
+  file.constructor = () => file;
+  sdk.photosPut({ bucket: 'bucketb2', 'Content-Type': file.type, key: file.name, 'x-amz-meta-customLabels': tags }, file, {})
+    .then(res => {
+      console.log(res)
+    });
+}
+
+document.getElementById("uploadButton").addEventListener("click", function () {
+  var msg = document.getElementById("uploadInput").value;
+  callUploadApi(msg);
+})
+
+function record() {
 
   var speech = true;
-    window.SpeechRecognition = window.SpeechRecognition
-                    || window.webkitSpeechRecognition;
+  window.SpeechRecognition = window.SpeechRecognition
+    || window.webkitSpeechRecognition;
 
-    const recognition = new SpeechRecognition();
-    recognition.interimResults = true;
-    const words = document.querySelector('.words');
-    words.appendChild(p);
+  const recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  const words = document.querySelector('.words');
+  words.appendChild(p);
 
-    recognition.addEventListener('result', e => {
-        const transcript = Array.from(e.results)
-            .map(result => result[0])
-            .map(result => result.transcript)
-            .join('')
+  recognition.addEventListener('result', e => {
+    const transcript = Array.from(e.results)
+      .map(result => result[0])
+      .map(result => result.transcript)
+      .join('')
 
-        document.getElementById("myInput").value = transcript;
-        console.log(transcript);
-    });
-     
-    
-    if (speech == true) {
-        recognition.start();
-    }
-    
+    document.getElementById("searchInput").value = transcript;
+    console.log(transcript);
+  });
+
+
+  if (speech == true) {
+    recognition.start();
+  }
+
 
 }

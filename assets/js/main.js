@@ -25,6 +25,7 @@ document.getElementById("searchButton").addEventListener("click", function () {
 function callUploadApi(tags) {
   var file = document.getElementById("imageInput").files[0];
   file.constructor = () => file;
+
   sdk.photosPut({ bucket: 'bucketb2', 'Content-Type': file.type, key: file.name, 'x-amz-meta-customLabels': tags }, file, {})
     .then(res => {
       console.log(res)

@@ -270,11 +270,10 @@ Resources:
       MemorySize: 128
       Role: !GetAtt indexPhotosIamRole.Arn
       Runtime: python3.9
-      Layers: [arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p38-aws-requests-auth:7, arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p38-requests:7]
       Timeout: 30
       Code:
         S3Bucket: frontendbucketb1
-        S3Key: index-photos/lambda_function.py
+        S3Key: index-photos/my-deployment-package.zip
         
   searchPhotosLambda:
     Type: AWS::Lambda::Function
@@ -285,11 +284,10 @@ Resources:
       MemorySize: 128
       Role: !GetAtt searchPhotosIamRole.Arn
       Runtime: python3.9
-      Layers: [arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p38-aws-requests-auth:7]
       Timeout: 30
       Code:
         S3Bucket: frontendbucketb1
-        S3Key: search-photos/lambda_function.py
+        S3Key: search-photos/my-deployment-package.zip
   
   uploadPhotosLambda:
     Type: AWS::Lambda::Function
@@ -303,5 +301,5 @@ Resources:
       Timeout: 30
       Code:
         S3Bucket: frontendbucketb1
-        S3Key: upload-photos/lambda_function.py
+        S3Key: upload-photos/my-deployment-package.zip
   

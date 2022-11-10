@@ -1,0 +1,305 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "lambda template"
+
+Parameters: 
+  Environment:
+    Type: String
+    Default: "test"
+
+Resources: 
+  indexPhotosIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: '2012-10-17'
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: "indexPhotosLambdaPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "arn:aws:logs:us-east-1:828815413195:log-group:/aws/lambda/index-photos:*"
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                  - s3-object-lambda:*
+                Resource: '*'
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - rekognition:*
+                Resource: '*'
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - es:*
+                Resource: '*'
+  
+  searchPhotosIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: '2012-10-17'
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: "searchPhotosLambdaPolicy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: logs:CreateLogGroup
+                Resource: arn:aws:logs:us-east-1:828815413195:*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - arn:aws:logs:us-east-1:828815413195:log-group:/aws/lambda/search-photos:*
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:GetMetricStatistics
+                  - cloudwatch:DescribeAlarms
+                  - cloudwatch:DescribeAlarmsForMetric
+                  - kms:DescribeKey
+                  - kms:ListAliases
+                  - lambda:GetPolicy
+                  - lambda:ListFunctions
+                  - lex:*
+                  - polly:DescribeVoices
+                  - polly:SynthesizeSpeech
+                  - kendra:ListIndices
+                  - iam:ListRoles
+                  - s3:ListAllMyBuckets
+                  - logs:DescribeLogGroups
+                  - s3:GetBucketLocation
+                Resource:
+                  - '*'
+              - Effect: Allow
+                Action:
+                  - lambda:AddPermission
+                  - lambda:RemovePermission
+                Resource: arn:aws:lambda:*:*:function:AmazonLex*
+                Condition:
+                  StringEquals:
+                    lambda:Principal: lex.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/lex.amazonaws.com/AWSServiceRoleForLexBots
+                  - arn:aws:iam::*:role/aws-service-role/channels.lex.amazonaws.com/AWSServiceRoleForLexChannels
+                  - arn:aws:iam::*:role/aws-service-role/lexv2.amazonaws.com/AWSServiceRoleForLexV2Bots*
+                  - arn:aws:iam::*:role/aws-service-role/channels.lexv2.amazonaws.com/AWSServiceRoleForLexV2Channels*
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/lex.amazonaws.com/AWSServiceRoleForLexBots
+                Condition:
+                  StringEquals:
+                    iam:AWSServiceName: lex.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/channels.lex.amazonaws.com/AWSServiceRoleForLexChannels
+                Condition:
+                  StringEquals:
+                    iam:AWSServiceName: channels.lex.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/lexv2.amazonaws.com/AWSServiceRoleForLexV2Bots*
+                Condition:
+                  StringEquals:
+                    iam:AWSServiceName: lexv2.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/channels.lexv2.amazonaws.com/AWSServiceRoleForLexV2Channels*
+                Condition:
+                  StringEquals:
+                    iam:AWSServiceName: channels.lexv2.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - iam:DeleteServiceLinkedRole
+                  - iam:GetServiceLinkedRoleDeletionStatus
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/lex.amazonaws.com/AWSServiceRoleForLexBots
+                  - arn:aws:iam::*:role/aws-service-role/channels.lex.amazonaws.com/AWSServiceRoleForLexChannels
+                  - arn:aws:iam::*:role/aws-service-role/lexv2.amazonaws.com/AWSServiceRoleForLexV2Bots*
+                  - arn:aws:iam::*:role/aws-service-role/channels.lexv2.amazonaws.com/AWSServiceRoleForLexV2Channels*
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/lex.amazonaws.com/AWSServiceRoleForLexBots
+                Condition:
+                  StringEquals:
+                    iam:PassedToService:
+                      - lex.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/lexv2.amazonaws.com/AWSServiceRoleForLexV2Bots*
+                Condition:
+                  StringEquals:
+                    iam:PassedToService:
+                      - lexv2.amazonaws.com
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - arn:aws:iam::*:role/aws-service-role/channels.lexv2.amazonaws.com/AWSServiceRoleForLexV2Channels*
+                Condition:
+                  StringEquals:
+                    iam:PassedToService:
+                      - channels.lexv2.amazonaws.com
+
+  uploadPhotosIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: 
+        Version: '2012-10-17'
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: "uploadPhotosLambdaPolicy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: logs:CreateLogGroup
+                Resource: arn:aws:logs:us-east-1:828815413195:*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - arn:aws:logs:us-east-1:828815413195:log-group:/aws/lambda/upload-photos:*
+
+  frontendS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: PublicReadWrite
+      BucketName: !Sub frontendbucketb1-${Environment}
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - HEAD
+              - GET
+            AllowedOrigins:
+              - '*'
+  
+  # frontendS3BucketPolicy:
+  #   Type: AWS::S3::BucketPolicy
+  #   Properties:
+  #     Bucket: !Sub frontendbucketb1-${Environment}
+  #     PolicyDocument: 
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Sid: Stmt1666988502851
+  #           Effect: Allow
+  #           Principal: '*'
+  #           Action: s3:GetObject
+  #           Resource: !GetAtt frontendS3Bucket.Arn
+
+  backendS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: PublicReadWrite
+      BucketName: !Sub bucketb2-${Environment}
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - HEAD
+              - GET
+            AllowedOrigins:
+              - '*'
+  
+  # backendS3BucketPolicy:
+  #   Type: AWS::S3::BucketPolicy
+  #   Properties:
+  #     Bucket: !Sub bucketb2-${Environment}
+  #     PolicyDocument: 
+  #       Version: '2012-10-17'
+  #       Statement:
+  #         - Sid: Stmt1666988502851
+  #           Effect: Allow
+  #           Principal: '*'
+  #           Action: s3:GetObject
+  #           Resource: !GetAtt backendS3Bucket.Arn
+
+  indexPhotosLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: "index photos lambda"
+      FunctionName: !Sub index-photos-${Environment}
+      Handler: index-photos::lambda_function.Function::lambda_handler
+      MemorySize: 128
+      Role: !GetAtt indexPhotosIamRole.Arn
+      Runtime: python3.9
+      Timeout: 30
+      Code:
+        S3Bucket: frontendbucketb1
+        S3Key: index-photos/my-deployment-package.zip
+        
+  searchPhotosLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: "search photos lambda"
+      FunctionName: !Sub search-photos-${Environment}
+      Handler: search-photos::lambda_function.Function::lambda_handler
+      MemorySize: 128
+      Role: !GetAtt searchPhotosIamRole.Arn
+      Runtime: python3.9
+      Timeout: 30
+      Code:
+        S3Bucket: frontendbucketb1
+        S3Key: search-photos/my-deployment-package.zip
+  
+  uploadPhotosLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: "upload photos lambda"
+      FunctionName: !Sub upload-photos-${Environment}
+      Handler: upload-photos::lambda_function.Function::lambda_handler
+      MemorySize: 128
+      Role: !GetAtt uploadPhotosIamRole.Arn
+      Runtime: python3.9
+      Timeout: 30
+      Code:
+        S3Bucket: frontendbucketb1
+        S3Key: upload-photos/my-deployment-package.zip
+  

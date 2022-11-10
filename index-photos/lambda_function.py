@@ -66,7 +66,6 @@ def lambda_handler(event, context):
         A1["labels"].append(item)
 
     print('A1: ', A1)
-    # A1 = json.dumps(A1)
     
     r = indexOpenSearch(A1)
     print(r.status_code, r.content)

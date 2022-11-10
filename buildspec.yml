@@ -3,7 +3,8 @@ version: 0.2
 phases:
   install:
     commands:
-      - aws cloudformation package --template-file template.yaml --s3-bucket bucketb2-test --output-template-file outputTemplate.yml
+      - aws cloudformation package --template-file template.yaml --s3-bucket ccbd-a2-artifacts --output-template-file packaged-template.yaml
 artifacts:
   files:
     - template.yaml
+    - packaged-template.yaml

@@ -5,6 +5,5 @@ phases:
     commands:
       - aws cloudformation package --template-file samTemplate.yaml --s3-bucket ccdb-lambda-pipeline --output-template-file outputsamtemplate.yml
 artifacts:
-  type: zip
   files:
     - template.yaml

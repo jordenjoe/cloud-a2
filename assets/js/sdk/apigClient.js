@@ -108,7 +108,7 @@ apigClientFactory.newClient = function (config) {
         var searchGetRequest = {
             verb: 'get'.toUpperCase(),
             path: pathComponent + uritemplate('/search').expand(apiGateway.core.utils.parseParametersToObject(params, [])),
-            headers: apiGateway.core.utils.parseParametersToObject(params, []),
+            headers: apiGateway.core.utils.parseParametersToObject(params, ['x-api-key']),
             queryParams: apiGateway.core.utils.parseParametersToObject(params, ['q']),
             body: body
         };

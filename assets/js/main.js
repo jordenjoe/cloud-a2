@@ -3,7 +3,8 @@ $(document).ready(function () {
 });
 
 function callSearchApi(message) {
-  return sdk.searchGet({ q: message }, {}, {});
+  return sdk.searchGet({ q: message, "x-api-key": "Gccl6hy79F6dPVqPlRfAz1Jhai9uEqge3xS75Fkq",
+  "myfirstkey": "Gccl6hy79F6dPVqPlRfAz1Jhai9uEqge3xS75Fkq"}, {}, {});
 }
 
 document.getElementById("searchButton").addEventListener("click", function () {

@@ -61,6 +61,8 @@ def lambda_handler(event, context):
     #parse response to get labels
     for item in response['Labels']:
         A1["labels"].append(item['Name'])
+        pluralItem = item['Name'] + 's'
+        A1["labels"].append(pluralItem)
 
     for item in customLabels:
         A1["labels"].append(item)

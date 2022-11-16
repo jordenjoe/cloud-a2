@@ -21,7 +21,7 @@ def indexOpenSearch(document):
     return r
         
 def lambda_handler(event, context):
-    
+    #comment update here jordne    
     #this will be our JSON object we store in Opensearch
     A1 = {}
     
